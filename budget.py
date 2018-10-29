@@ -1,3 +1,6 @@
+from logbook import Logger, StreamHandler
+import sys
+
 from services.budget_tools import (
     load_budget_workbook,
     save_transactions,
@@ -10,7 +13,11 @@ from services.craft_email import get_summary_df, draft_message
 from services.send_email import send_email
 
 
+def initiate_logbook():
+    StreamHandler(sys.stdout).push_application()
+
 def update_budget(month, budget_file):
+
     summary_df, trans_df = load_budget_workbook(
         filename=f"{budget_file} Monthly budget", month=month
     )
@@ -34,6 +41,10 @@ if (
     # month = '2018-10'
     # budget_file = '2018-2019'
     # summary_df, trans_df = update_budget(month, budget_file)
+    initiate_logbook()
+    log = Logger('Startup')
+
+    log.notice('Starting up!')
     df = get_summary_df()
     msg = draft_message(df)
     print(msg)
