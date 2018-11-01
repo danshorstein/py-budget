@@ -102,10 +102,9 @@ def convert_txn_headers(new_df):
 
 def convert_to_float(amt):
     try:
-        amt = float(amt.replace("$", "").replace(",", ""))
-    except Exception as e:
-        pass
-    return amt
+        return float(amt.replace("$", "").replace(",", ""))
+    except ValueError:
+        return amt
 
 
 def save_transactions(df, filename, month):
@@ -138,3 +137,4 @@ def save_transactions(df, filename, month):
     print("Updating workbook")
     transactions.update_cells(cell_list)
     print("Update complete")
+

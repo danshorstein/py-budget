@@ -11,7 +11,7 @@ budget_file = '2018-2019'
 def numify(num):
     try:
         return int(num.replace('$','').replace(',',''))
-    except:
+    except ValueError:
         return 0
 
 

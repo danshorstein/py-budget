@@ -1,5 +1,8 @@
-from logbook import Logger, StreamHandler
 import sys
+import re
+
+import logbook
+from logbook import StreamHandler, TimedRotatingFileHandler
 
 from services.budget_tools import (
     load_budget_workbook,
@@ -13,10 +16,31 @@ from services.craft_email import get_summary_df, draft_message
 from services.send_email import send_email
 
 
-def initiate_logbook():
-    StreamHandler(sys.stdout).push_application()
+app_log = logbook.Logger('App')
+
+def init_logging(filename=None):
+    level = logbook.TRACE
+
+    if filename:
+        logbook.TimedRotatingFileHandler(filename, level=level).push_application()
+    else:
+        logbook.StreamHandler(sys.stdout, level=level).push_application()
+
+    msg = 'Logging initialized; level: {}; mode: {}'.format(
+        level,
+        'stdout mode' if not filename else f'file mode: {filename}'
+    )
+    logger = logbook.Logger('Startup')
+    logger.notice(msg)
+
 
 def update_budget(month, budget_file):
+    app_log.trace(f'Starting update_budget with month={month} and budget_file={budget_file}')
+
+    if not re.match(r'\d{4}-\d{2}', month):
+        msg = f'Input month must be a string in format "YYYY-MM". Value provided was {month}'
+        app_log.error(msg)
+        raise ValueError(msg)
 
     summary_df, trans_df = load_budget_workbook(
         filename=f"{budget_file} Monthly budget", month=month
@@ -41,10 +65,11 @@ if (
     # month = '2018-10'
     # budget_file = '2018-2019'
     # summary_df, trans_df = update_budget(month, budget_file)
-    initiate_logbook()
-    log = Logger('Startup')
 
-    log.notice('Starting up!')
+    init_logging()
+    update_budget('hi', 'yo')
+    quit(0)
+
     df = get_summary_df()
     msg = draft_message(df)
     print(msg)
