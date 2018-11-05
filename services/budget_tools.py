@@ -3,13 +3,25 @@ from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 from datetime import date
 
+import requests
+import logbook
+
+gspread_log = logbook.Logger('Google')
+
 scope = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive",
 ]
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "services/client_secret_gspread.json", scope
-)
+
+try:
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
+        "services/client_secret_gspread.json", scope
+    )
+except FileNotFoundError:
+    msg = 'File client_secret_gspread.json not found, required for google doc connection. Please download and save in services folder and try again.'
+    print(msg)
+    gspread_log.warning(msg)
+    raise
 
 client = gspread.authorize(creds)
 
@@ -30,12 +42,23 @@ TXN_COLUMNS = ["Hash", "Date", "Amount", "Description", "Category"]
 
 
 def load_budget_workbook(filename, month):
-    sheets = client.open(filename)
-
+    try:
+        sheets = client.open(filename)
+        gspread_log.trace(f'Opened file {filename}')
+    except Exception as e:
+        gspread_log.warning(f'{type(e)} error trying to open {filename} - {e}')
+        raise
+    
     month = month.split("-")[1]
 
     # Load summary sheet
-    summary = sheets.worksheet(f"Budget-{month}")
+    try:
+        summary = sheets.worksheet(f"Budget-{month}")
+        gspread_log.trace(f'Opened tab Budget-{month}')
+    except Exception as e:
+        gspread_log.warning(f'{type(e)} error trying to open tab Budget-{month} - {e}')
+        raise
+
     sum_df = pd.DataFrame(
         [row[:10] for row in summary.get_all_values()[10:]], columns=SUMMARY_COLUMNS
     )
@@ -49,8 +72,10 @@ def load_budget_workbook(filename, month):
 
     try:
         trans_df["Date"] = trans_df["Date"].map(pd.to_datetime)
-    except:
-        pass
+    except Exception as e:
+        gspread_log.warning(f'{type(e)} - Error converting trans_df dates to datetime - {e}')
+
+    gspread_log.info('') #TODO - finish this!!
 
     return sum_df, trans_df
 
@@ -111,7 +136,12 @@ def save_transactions(df, filename, month):
     month = month.split("-")[1]
 
     print("getting values")
-    sheets = client.open(filename)
+    try:
+        sheets = client.open(filename)
+    except requests.exceptions.ConnectionError:
+        gspread_log.warning(f'ConnectionError! Error accessing file {filename}')
+        raise
+        
     transactions = sheets.worksheet(f"Activity-{month}")
     num_rows = 2 + len(df)
     current_rows = transactions.row_count

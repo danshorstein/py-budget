@@ -62,15 +62,17 @@ def update_budget(month, budget_file):
 if (
     __name__ == "__main__"
 ):  # TODO Update craft_email.py to include info on NEW TRANSACTIONS and assignments. Also include any budget items NEGATIVE and LIST TOP 5 txns!!
-    # month = '2018-10'
-    # budget_file = '2018-2019'
-    # summary_df, trans_df = update_budget(month, budget_file)
+    init_logging('logs/log_file.log')
+    month = '2018-10'
+    budget_file = '2018-2019'
+    summary_df, trans_df = update_budget(month, budget_file)
 
-    init_logging()
-    update_budget('hi', 'yo')
-    quit(0)
 
-    df = get_summary_df()
-    msg = draft_message(df)
-    print(msg)
-    send_email(msg)
+    # init_logging()
+    # update_budget('hi', 'yo')
+    # quit(0)
+    # init_logging()
+    # df = get_summary_df()
+    # msg = draft_message(df)
+    # print(msg)
+    # send_email(msg)

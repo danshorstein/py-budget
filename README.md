@@ -2,12 +2,9 @@
 An automated personal budgeting solution using Mint and Google Docs
 
 ## TODO
-Add:
-Break out private parts and add to GitHub including template
 
-Logging
-Error handling
-Tests
+Logging, error handling, tests - add more!
+Auto create new spreadsheet tabs when in new month
 iPhone notification
 Temporary transactions with flag
 Delete old temp transactions each day
