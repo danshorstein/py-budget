@@ -1,6 +1,11 @@
 # mint budget
 An automated personal budgeting solution using Mint and Google Docs
 
+## Required docs not included in the github repo
+* services/client_secret_gspread.json - key to access google docs
+* services/secrets.py - contains dictionary called 'login' with 'username' and 'password' items for mint login
+* services/budget_xwalks.py - contains crosswalks determined needed from mint data
+
 ## TODO
 
 Logging, error handling, tests - add more!
