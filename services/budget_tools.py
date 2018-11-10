@@ -1,8 +1,9 @@
+import os
+from datetime import date
+
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
-from datetime import date
-
 import requests
 import logbook
 
@@ -13,9 +14,12 @@ scope = [
     "https://www.googleapis.com/auth/drive",
 ]
 
+base_folder = os.path.dirname(__file__)
+gspread_path = os.path.join(base_folder, 'client_secret_gspread.json')
+
 try:
     creds = ServiceAccountCredentials.from_json_keyfile_name(
-        "services/client_secret_gspread.json", scope
+        gspread_path, scope
     )
 except FileNotFoundError:
     msg = 'File client_secret_gspread.json not found, required for google doc connection. Please download and save in services folder and try again.'
@@ -75,7 +79,7 @@ def load_budget_workbook(filename, month):
     except Exception as e:
         gspread_log.warning(f'{type(e)} - Error converting trans_df dates to datetime - {e}')
 
-    gspread_log.info('') #TODO - finish this!!
+    gspread_log.info(f'Loaded budget workbook for {month}') #TODO - finish this!!
 
     return sum_df, trans_df
 
@@ -87,7 +91,9 @@ def identify_new_txns(cur_df, trans_df, summary_df):
 
     new_txns = new_hash - cur_hash
 
-    print(f"Total txns of {len(new_hash)}, new txns are {len(new_txns)}")
+    msg = (f"Total txns of {len(new_hash)}, new txns are {len(new_txns)}")
+    print(msg)
+    gspread_log.info(msg)
     new_txns_df = cur_df[cur_df["hash"].isin(new_txns)]
 
     return new_txns_df
@@ -135,7 +141,10 @@ def convert_to_float(amt):
 def save_transactions(df, filename, month):
     month = month.split("-")[1]
 
-    print("getting values")
+    msg = "getting values"
+    print(msg)
+    gspread_log.trace(msg)
+
     try:
         sheets = client.open(filename)
     except requests.exceptions.ConnectionError:
@@ -147,14 +156,18 @@ def save_transactions(df, filename, month):
     current_rows = transactions.row_count
 
     if current_rows < num_rows:
-        print("Current rows are {}, total needed are {}".format(current_rows, num_rows))
+        msg = "Current rows are {}, total needed are {}".format(current_rows, num_rows)
+        print(msg)
+        gspread_log.trace(msg)
         transactions.add_rows(num_rows - current_rows)
 
     cell_list = transactions.range("A2:E{}".format(num_rows))
 
     num = 0
 
-    print("updating local values")
+    msg = "updating local values"
+    print(msg)
+    gspread_log.trace(msg)
 
     for idx, row in df.iterrows():
         for value in row:
@@ -164,7 +177,14 @@ def save_transactions(df, filename, month):
                 cell_list[num].value = value
             num += 1
 
-    print("Updating workbook")
+
+    msg = "Updating workbook"
+    print(msg)
+    gspread_log.trace(msg)
+
     transactions.update_cells(cell_list)
-    print("Update complete")
+
+    msg = "Update complete"
+    print(msg)
+    gspread_log.trace(msg)
 

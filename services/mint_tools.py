@@ -2,15 +2,22 @@ from datetime import datetime
 import hashlib
 import json
 import time
+import os
 
 import pandas as pd
 import mintapi
+import logbook
 
 from services.secrets import login
 from services.budget_xwalks import desc_category, hash_category, mapped_category, mapped_account, first_11
 
 email = login['username']
 password = login['password']
+
+mint_log = logbook.Logger('Mint')
+
+base_path = os.path.dirname(__file__)
+mint_data_path = os.path.join(base_path, '..', 'mint_data.json')    
 
 def filter_by_month(row, m_filt, y_filt):
     y, m, *_ = row.date.date().timetuple()
@@ -25,6 +32,7 @@ def download_transactions(month, use_local=False):
     cur_year, cur_mon = [int(val) for val in month.split('-')]
 
     if not use_local:
+        mint_log.trace(f'downloading transactions for {cur_mon}/{cur_year}')
         mint = mintapi.Mint(email, password, headless=True, mfa_method='sms')
         mint.initiate_account_refresh()
 
@@ -32,6 +40,7 @@ def download_transactions(month, use_local=False):
         df.to_json('mint_data.json')
 
     else:
+        mint_log.trace(f'using local file to get transactions for {cur_mon}/{cur_year}')
         df = pd.read_json('mint_data.json')
 
     df['hash'] = df.apply(hash_row, axis=1)
@@ -50,8 +59,10 @@ def download_detailed_transactions(month, use_local=False, refresh_acct=True):
     print(start_date)
 
     if not use_local:
+        mint_log.trace(f'downloading transactions for {cur_mon}/{cur_year}')
         mint = mintapi.Mint(email, password, headless=True, mfa_method='sms')
         if refresh_acct:
+            mint_log.trace('Refreshing account')
             mint.initiate_account_refresh()
 
         df = mint.get_detailed_transactions(start_date=start_date, include_investment=False) 
@@ -61,11 +72,12 @@ def download_detailed_transactions(month, use_local=False, refresh_acct=True):
                  'mcategory', 'account', 'labels', 'note']]
         df.columns = ['date', 'description', 'original_description', 'amount', 'transaction_type',
                       'category', 'account_name', 'labels', 'notes']
-        
-        df.to_json('data/mint_data.json')
+        mint_log.trace(f'Saving data to file at {mint_data_path}')
+        df.to_json(mint_data_path)
         
     else:
-        df = pd.read_json('data/mint_data.json')
+        mint_log.trace(f'Ising local transactions for {cur_mon}/{cur_year} from file at {mint_data_path}')
+        df = pd.read_json(mint_data_path)
         
     df['hash'] = df.apply(hash_row, axis=1)
     df['category'] = df['category'].map(lambda x: x.lower())
@@ -74,6 +86,7 @@ def download_detailed_transactions(month, use_local=False, refresh_acct=True):
     cur_df = df[df.apply(lambda x: filter_by_month(x, cur_mon, cur_year), axis=1)].copy()
     cur_df['month'] = cur_mon
     cur_df = cur_df.apply(update_categories, axis=1)
+    mint_log.info(f'DataFrame created with {len(df)} records.')
     return cur_df[['date',
                      'description',
                      'original_description',
@@ -118,3 +131,4 @@ def update_categories(row):
 
     return row
 
+ 

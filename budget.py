@@ -1,5 +1,6 @@
 import sys
 import re
+import os
 
 import logbook
 from logbook import StreamHandler, TimedRotatingFileHandler
@@ -15,6 +16,7 @@ from services.mint_tools import download_detailed_transactions
 from services.craft_email import get_summary_df, draft_message
 from services.send_email import send_email
 
+base_folder = os.path.dirname(__file__)
 
 app_log = logbook.Logger('App')
 
@@ -62,8 +64,8 @@ def update_budget(month, budget_file):
 if (
     __name__ == "__main__"
 ):  # TODO Update craft_email.py to include info on NEW TRANSACTIONS and assignments. Also include any budget items NEGATIVE and LIST TOP 5 txns!!
-    init_logging('logs/log_file.log')
-    month = '2018-10'
+    init_logging(os.path.join(base_folder, 'logs/log_file.log'))
+    month = '2018-11'
     budget_file = '2018-2019'
     summary_df, trans_df = update_budget(month, budget_file)
 
