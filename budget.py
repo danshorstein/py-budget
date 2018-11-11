@@ -15,6 +15,7 @@ from services.budget_tools import (
 from services.mint_tools import download_detailed_transactions
 from services.craft_email import get_summary_df, draft_message
 from services.send_email import send_email
+from email_attempt import draft_html_message
 
 base_folder = os.path.dirname(__file__)
 
@@ -69,8 +70,8 @@ if (
     init_logging(os.path.join(base_folder, 'logs/log_file.log'))
     month = '2018-11'
     budget_file = '2018-2019'
-    summary_df, trans_df = update_budget(month, budget_file)
-
+    update_budget(month, budget_file)
+    send_email(draft_html_message(month, budget_file))
 
     # init_logging()
     # update_budget('hi', 'yo')

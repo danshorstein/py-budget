@@ -2,6 +2,7 @@ import os
 from datetime import date
 
 import gspread
+from gspread.exceptions import SpreadsheetNotFound
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import requests
@@ -49,6 +50,12 @@ def load_budget_workbook(filename, month):
     try:
         sheets = client.open(filename)
         gspread_log.trace(f'Opened file {filename}')
+    
+    except SpreadsheetNotFound:
+        msg = f'{type(e)} error trying to open {filename} - {e}'
+        gspread_log.warning(msg)
+        raise SpreadsheetNotFound(msg)
+    
     except Exception as e:
         gspread_log.warning(f'{type(e)} error trying to open {filename} - {e}')
         raise

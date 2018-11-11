@@ -65,7 +65,7 @@ div[style*="margin: 16px 0;"] { margin: 0 !important; }
                         <tr>
                             <td align="left" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 800; line-height: 48px;" class="mobile-center">
                                 <h1 style="font-size: 20px; font-weight: 800; margin: 0; color: #ffffff;">
-                                    Shorstein budget </br>
+                                    {{ name }} Budget </br>
                                     {{ date }}</h1>
                             </td>
                         </tr>
@@ -110,7 +110,7 @@ div[style*="margin: 16px 0;"] { margin: 0 !important; }
                 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
                     <tr>
                         <td align="center" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding-top: 25px;">
-                            <img src="budget_image.png" width="570" height="304" style="display: block; border: 0px;" /><br>
+                            <img src="https://github.com/danshorstein/py-budget/blob/master/templates/budget_image.png?raw=true" width="570" height="304" style="display: block; border: 0px;" /><br>
                             <h2 style="font-size: 30px; font-weight: 800; line-height: 36px; color: #333333; margin: 0;">
                                 {{ main_message_header }}
                             </h2>
@@ -128,21 +128,23 @@ div[style*="margin: 16px 0;"] { margin: 0 !important; }
                             <table cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
                                     <td width="75%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-                                        Order Confirmation #
+                                        category
                                     </td>
                                     <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-                                        2345678
+                                        Balance
                                     </td>
                                 </tr>
+                                {% for budget_cat in budget_categories %}
                                 <tr>
                                     <td width="75%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;">
-                                        Purchased Item (1)
+                                        {{ budget_cat['name']}}
                                     </td>
                                     <td width="25%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding: 15px 10px 5px 10px;">
-                                        $100.00
+                                        {{ budget_cat['amt']}}
                                     </td>
                                 </tr>
-                                <tr>
+                                {% endfor %}
+                                <!-- <tr>
                                     <td width="75%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding: 5px 10px;">
                                         Shipping + Handling
                                     </td>
@@ -174,7 +176,7 @@ div[style*="margin: 16px 0;"] { margin: 0 !important; }
                                 </tr>
                             </table>
                         </td>
-                    </tr>
+                    </tr> -->
                 </table>
                 <!--[if (gte mso 9)|(IE)]>
                 </td>
@@ -203,8 +205,8 @@ div[style*="margin: 16px 0;"] { margin: 0 !important; }
                                 <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
                                     <tr>
                                         <td align="left" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px;">
-                                            <p style="font-weight: 800;">Delivery Address</p>
-                                            <p>675 Massachusetts Avenue<br>11th Floor<br>Cambridge, MA 02139</p>
+                                            <p style="font-weight: 800;">SECTION TBD</p>
+                                            <p>SECTION TBD</p>
 
                                         </td>
                                     </tr>
@@ -218,8 +220,8 @@ div[style*="margin: 16px 0;"] { margin: 0 !important; }
                                 <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:300px;">
                                     <tr>
                                         <td align="left" valign="top" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px;">
-                                            <p style="font-weight: 800;">Estimated Delivery Date</p>
-                                            <p>January 1st, 2016</p>
+                                            <p style="font-weight: 800;">SECTION TBD</p>
+                                            <p>SECTION TBD</p>
                                         </td>
                                     </tr>
                                 </table>
@@ -250,7 +252,7 @@ div[style*="margin: 16px 0;"] { margin: 0 !important; }
                     <tr>
                         <td align="center" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; padding-top: 25px;">
                             <h2 style="font-size: 24px; font-weight: 800; line-height: 30px; color: #ffffff; margin: 0;">
-                                Get 25% off your next order.
+                                Budget!!!.
                             </h2>
                         </td>
                     </tr>
@@ -289,15 +291,14 @@ div[style*="margin: 16px 0;"] { margin: 0 !important; }
                     <tr>
                         <td align="center" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 24px; padding: 5px 0 10px 0;">
                             <p style="font-size: 14px; font-weight: 800; line-height: 18px; color: #333333;">
-                                675 Massachusetts Avenue<br>
-                                Cambridge, MA 02139
+                                TBD???
                             </p>
                         </td>
                     </tr>
                     <tr>
                         <td align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 24px;">
                             <p style="font-size: 14px; font-weight: 400; line-height: 20px; color: #777777;">
-                                If you didn't create an account using this email address, please ignore this email or <a href="http://litmus.com" target="_blank" style="color: #777777;">unsusbscribe</a>.
+                                Hi!!! <a href="http://litmus.com" target="_blank" style="color: #777777;">unsusbscribe</a>.
                             </p>
                         </td>
                     </tr>
