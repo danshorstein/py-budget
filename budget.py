@@ -55,6 +55,8 @@ def update_budget(month, budget_file):
     new_df = combine_transactions(new_trans_df, trans_df)
     save_transactions(new_df, filename=f"{budget_file} Monthly budget", month=month)
 
+    app_log.trace('Loading updated budget workbook to draft email!')
+
     summary_df, trans_df = load_budget_workbook(
         filename=f"{budget_file} Monthly budget", month=month
     )

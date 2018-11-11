@@ -1,4 +1,7 @@
 import pandas as pd
+import os
+
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 from services.send_email import create_message
 from services.budget_tools import load_budget_workbook, save_transactions, identify_new_txns, convert_txn_headers, combine_transactions
@@ -54,3 +57,15 @@ def draft_message(full_df):
 
     return msg
 
+
+def draft_html_message(full_df=None):
+    env = Environment(
+        loader=PackageLoader('py-budget', 'templates')
+    )
+
+    template = env.get_template('email_template.html')
+    template.render(title='POOP!!!!')
+    return template
+
+if __name__ == '__main__':
+    print(draft_html_message())
