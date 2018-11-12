@@ -1,4 +1,5 @@
 from datetime import date
+import os
 
 from jinja2 import FileSystemLoader, Environment
 
@@ -7,6 +8,8 @@ from services.send_email import send_email
 from services.craft_email import get_summary_df
 
 
+base_folder = os.path.dirname(__file__)
+
 def draft_html_message(month, summary_df=None, trans_df=None):
 
     y, m = month.split('-')
@@ -14,7 +17,7 @@ def draft_html_message(month, summary_df=None, trans_df=None):
     month = date(int(y), int(m), 1)
 
     env = Environment(
-        loader = FileSystemLoader('templates')
+        loader = FileSystemLoader(os.path.join(base_folder, 'templates'))
     )
     
     template = env.get_template('email_template.html')

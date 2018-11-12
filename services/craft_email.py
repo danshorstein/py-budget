@@ -58,14 +58,3 @@ def draft_message(full_df):
     return msg
 
 
-def draft_html_message(full_df=None):
-    env = Environment(
-        loader=PackageLoader('py-budget', 'templates')
-    )
-
-    template = env.get_template('email_template.html')
-    template.render(title='POOP!!!!')
-    return template
-
-if __name__ == '__main__':
-    print(draft_html_message())

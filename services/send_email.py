@@ -10,6 +10,8 @@ from oauth2client import file, client, tools
 
 gmail_log = logbook.Logger('gmail')
 
+base_path = os.path.dirname(__file__)
+
 try:
     from services.secrets import login
 except:
@@ -19,10 +21,11 @@ EMAIL = login['username']
 SCOPES = 'https://www.googleapis.com/auth/gmail.compose'
 
 def send_email(msg):
-    store = file.Storage("token.json")
+    store = file.Storage(os.path.join(base_path, "token.json"))
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets("services/credentials.json", SCOPES)
+        flow = client.flow_from_clientsecrets(
+            os.path.join(base_path, "services/credentials.json"), SCOPES)
         creds = tools.run_flow(flow, store)
     service = build("gmail", "v1", http=creds.authorize(Http()))
 

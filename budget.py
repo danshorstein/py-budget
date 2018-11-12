@@ -71,7 +71,10 @@ if (
     month = '2018-11'
     budget_file = '2018-2019'
     update_budget(month, budget_file)
-    send_email(draft_html_message(month, budget_file))
+    try:
+        send_email(draft_html_message(month, budget_file))
+    except Exception as e:
+        app_log.warning(f'{type(e)}: {e}')
 
     # init_logging()
     # update_budget('hi', 'yo')
