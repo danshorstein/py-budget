@@ -12,9 +12,9 @@ base_folder = os.path.dirname(__file__)
 
 def draft_html_message(month, summary_df=None, trans_df=None):
 
-    y, m = month.split('-')
+    # y, m = month.split('-')
 
-    month = date(int(y), int(m), 1)
+    # month = date(int(y), int(m), 1)
 
     env = Environment(
         loader = FileSystemLoader(os.path.join(base_folder, 'templates'))
@@ -22,16 +22,17 @@ def draft_html_message(month, summary_df=None, trans_df=None):
     
     template = env.get_template('email_template.html')
     
-    df = get_summary_df('2018-2019', '2018-11')
+    df = get_summary_df('2018-2019', month)
     df.index = df.Title
 
     html_message = template.render(
         name='Shorstein',
         date=date.today().strftime('%B %Y'),
         main_message_header='Budget Highlights',
-        main_message='Remaining balances in restaurants and groceries',
-        budget_categories=[{'name': 'FOOD | GROCERIES', 'amt': df.loc['FOOD | GROCERIES',:].Diff},
-                           {'name': 'FOOD | RESTAURANTS', 'amt':  df.loc['FOOD | RESTAURANTS',:].Diff}],
+        main_message='Remaining balances',
+        # budget_categories=[{'name': 'FOOD | GROCERIES', 'amt': df.loc['FOOD | GROCERIES',:].Diff},
+        #                    {'name': 'FOOD | RESTAURANTS', 'amt':  df.loc['FOOD | RESTAURANTS',:].Diff}],
+        budget_categories=[{'name': idx, 'amt': df.loc[idx,:].Diff} for idx in list(df.index)],
         current_cash_balance=...,
         current_credit_card_balance=...,
         remaining_restaurant_budget=...,

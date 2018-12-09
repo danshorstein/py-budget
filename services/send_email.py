@@ -13,11 +13,12 @@ gmail_log = logbook.Logger('gmail')
 base_path = os.path.dirname(__file__)
 
 try:
-    from services.secrets import login
+    from services.secrets import login, recipients
 except:
-    from secrets import login
+    from secrets import login, recipients
 
 EMAIL = login['username']
+RECIPIENTS = recipients
 SCOPES = 'https://www.googleapis.com/auth/gmail.compose'
 
 def send_email(msg):
@@ -25,20 +26,20 @@ def send_email(msg):
     creds = store.get()
     if not creds or creds.invalid:
         flow = client.flow_from_clientsecrets(
-            os.path.join(base_path, "services/credentials.json"), SCOPES)
+            os.path.join(base_path, "credentials.json"), SCOPES)
         creds = tools.run_flow(flow, store)
     service = build("gmail", "v1", http=creds.authorize(Http()))
 
     body = create_message(
         sender=EMAIL,
-        to=EMAIL,
+        to=', '.join(RECIPIENTS),
         subject=f"Budget Update {date.today()}",
         message=msg,
     )
 
     draft = service.users().messages().send(userId="me", body=body).execute()
 
-    log_msg = f'Sent email {draft} to {EMAIL} dated {date.today()}'
+    log_msg = f'Sent email {draft} to {", ".join(RECIPIENTS)} dated {date.today()}'
     gmail_log.info(log_msg)
     print(log_msg)
 
@@ -60,34 +61,3 @@ def create_message(sender, to, subject, message):
     # message["from"] = sender
     message["subject"] = subject
     return {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()}
-
-
-if __name__ == "__main__":
-    # msg = "<h1>HI!!!!!</h1></br><ul><li>hello</li><li>testing!!!!!</li></ul>"
-    msg = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-  <title></title>
-
-  <style type="text/css">
-  </style>    
-</head>
-<body style="margin:0; padding:0; background-color:#F2F2F2;">
-  <center>
-    <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#F2F2F2">
-        <tr>
-            <td align="center" valign="top">
-                testing!
-                
-            </td>
-        </tr>
-    </table>
-  </center>
-</body>
-</html>'''
-    
-    send_email(msg)

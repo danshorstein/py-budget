@@ -68,7 +68,7 @@ if (
     __name__ == "__main__"
 ):  # TODO Update craft_email.py to include info on NEW TRANSACTIONS and assignments. Also include any budget items NEGATIVE and LIST TOP 5 txns!!
     init_logging(os.path.join(base_folder, 'logs/log_file.log'))
-    month = '2018-11'
+    month = '2018-12'
     budget_file = '2018-2019'
     update_budget(month, budget_file)
     try:
